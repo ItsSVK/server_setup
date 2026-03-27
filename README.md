@@ -58,7 +58,15 @@ sudo ./install.sh
 
 ### Extending
 
-Each script inside `./steps/` is idempotent and loads dependencies from `./lib/`. You can edit, remove, or add new steps (`10_myapp.sh`) effortlessly.
+The project uses a structured modular design to keep everything strictly organized. Each script inside the `steps/` directory tree is idempotent and loads core functions from `lib/`.
+
+- `steps/essentials/`: Contains critical setup routines (System Updates, User Creation, SSH Hardening, UFW, Fail2ban). These run automatically.
+- `steps/advanced/`: Houses optional tool installations (Nginx, Docker). These require user confirmation via the `-f` flag to be enabled.
+- `steps/finalize.sh`: Executes last-minute actions like locking the root account.
+
+You can easily modify, remove, or add custom shell scripts into any of these directories based on your requirements!
+
+**Intelligent Swap Space**: Operating inside the `essentials` folder, the swap provisioning script executes early to ensure memory safety. It determines your server's total RAM automatically and computes the best fallback swap size (up to a max of 4GB) instead of relying on a hardcoded value.
 
 ---
 

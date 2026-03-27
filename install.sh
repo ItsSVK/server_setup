@@ -121,14 +121,24 @@ fi
 
 echo -e "\n${CYAN}Starting installation steps...${NC}\n"
 
-# Execute all steps in alphabetical/numerical order
-for step in "$SCRIPT_DIR"/steps/*.sh; do
+# Execute Essential steps
+for step in "$SCRIPT_DIR"/steps/essentials/*.sh; do
     if [ -f "$step" ]; then
-        # Running via bash ensures the step executes in its own process
-        # Variables exported above will be inherited
         bash "$step"
     fi
 done
+
+# Execute Advanced steps
+for step in "$SCRIPT_DIR"/steps/advanced/*.sh; do
+    if [ -f "$step" ]; then
+        bash "$step"
+    fi
+done
+
+# Execute Finalize step
+if [ -f "$SCRIPT_DIR/steps/finalize.sh" ]; then
+    bash "$SCRIPT_DIR/steps/finalize.sh"
+fi
 
 echo ""
 echo -e "${CYAN}===================================${NC}"
