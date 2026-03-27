@@ -7,17 +7,35 @@ source "$PROJECT_ROOT/lib/common.sh"
 source "$PROJECT_ROOT/lib/ui.sh"
 source "$PROJECT_ROOT/lib/env.sh"
 
-step_info "Configuring Swap space"
+# Calculate optimal swap size based on total RAM
+TOTAL_MEM_MB=$(free -m | awk '/^Mem:/{print $2}')
+if [ -z "$TOTAL_MEM_MB" ]; then
+    SWAP_SIZE_MB=2048
+    SWAP_SIZE_G=2
+elif [ "$TOTAL_MEM_MB" -lt 2000 ]; then
+    SWAP_SIZE_MB=$((TOTAL_MEM_MB * 2))
+    SWAP_SIZE_G=$((SWAP_SIZE_MB / 1024))
+elif [ "$TOTAL_MEM_MB" -lt 8000 ]; then
+    SWAP_SIZE_MB=$TOTAL_MEM_MB
+    SWAP_SIZE_G=$((SWAP_SIZE_MB / 1024))
+else
+    SWAP_SIZE_MB=4096
+    SWAP_SIZE_G=4
+fi
+
+[ "$SWAP_SIZE_G" -eq 0 ] && SWAP_SIZE_G=1
+
+step_info "Configuring dynamically sized Swap space (${SWAP_SIZE_MB}MB)"
 
 if grep -q "/swapfile" /proc/swaps; then
     log "Swap space is already active."
 elif [ -f /swapfile ]; then
     run_with_loader "Activating existing swapfile" swapon /swapfile
 else
-    log "Creating 2GB swapfile..."
-    if ! fallocate -l 2G /swapfile 2>/dev/null; then
+    log "Creating ${SWAP_SIZE_G}GB swapfile..."
+    if ! fallocate -l ${SWAP_SIZE_G}G /swapfile 2>/dev/null; then
         warn "fallocate failed, falling back to dd for swap creation..."
-        run_with_loader "Creating 2GB swapfile (dd)" dd if=/dev/zero of=/swapfile bs=1M count=2048 status=none
+        run_with_loader "Creating ${SWAP_SIZE_MB}MB swapfile (dd)" dd if=/dev/zero of=/swapfile bs=1M count=$SWAP_SIZE_MB status=none
     else
         log "fallocate succeeded."
     fi
