@@ -88,12 +88,12 @@ if [ "$ADVANCED_MODE" == "yes" ]; then
     echo -e "${YELLOW}Advanced Mode Enabled${NC}"
     echo -e "${CYAN}===================================${NC}"
     
-    if confirm "Install Nginx? (Web Server)"; then
-        INSTALL_NGINX="yes"
-    fi
-
     if confirm "Install Docker? (Containers Engine)"; then
         INSTALL_DOCKER="yes"
+    fi
+
+    if confirm "Install Nginx? (Web Server)"; then
+        INSTALL_NGINX="yes"
     fi
 else
     echo -e "Skipping advanced tool prompts."
