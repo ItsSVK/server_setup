@@ -11,20 +11,18 @@ step_info "Configuring Swap space"
 if grep -q "/swapfile" /proc/swaps; then
     log "Swap space is already active."
 elif [ -f /swapfile ]; then
-    log "Swapfile exists but is not active. Activating it..."
-    swapon /swapfile || true
-    log "Swapfile activated."
+    run_with_loader "Activating existing swapfile" swapon /swapfile
 else
     log "Creating 2GB swapfile..."
-    # fallocate is faster but may not be supported on all filesystems (e.g., ZFS/Btrfs). Fallback to dd.
     if ! fallocate -l 2G /swapfile 2>/dev/null; then
         warn "fallocate failed, falling back to dd for swap creation..."
-        dd if=/dev/zero of=/swapfile bs=1M count=2048 status=none
+        run_with_loader "Creating 2GB swapfile (dd)" dd if=/dev/zero of=/swapfile bs=1M count=2048 status=none
+    else
+        log "fallocate succeeded."
     fi
     chmod 600 /swapfile
-    mkswap /swapfile
-    swapon /swapfile
-    log "Swapfile created and activated."
+    run_with_loader "Setting up swapspace" mkswap /swapfile
+    run_with_loader "Activating swapfile" swapon /swapfile
 fi
 
 log "Testing fstab for swap entry..."

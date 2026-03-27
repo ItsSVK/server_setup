@@ -8,18 +8,22 @@ source "$PROJECT_ROOT/lib/env.sh"
 
 step_info "Installing and configuring Docker"
 
+if [ "${INSTALL_DOCKER:-no}" != "yes" ]; then
+    log "Skipping Docker setup as per user choice."
+    exit 0
+fi
+
 export DEBIAN_FRONTEND=noninteractive
 
 if command -v docker >/dev/null 2>&1; then
     log "Docker is already installed."
 else
-    log "Removing obsolete Docker packages..."
-    apt-get remove -y -qq docker.io docker-compose docker-compose-v2 docker-doc podman-docker containerd runc 2>/dev/null || true
-
+    run_with_loader "Removing obsolete Docker packages" apt-get remove -y -qq docker.io docker-compose docker-compose-v2 docker-doc podman-docker containerd runc
+    
     log "Adding Docker's official GPG key..."
     install -m 0755 -d /etc/apt/keyrings
     if [ ! -f /etc/apt/keyrings/docker.asc ]; then
-        curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
+        run_with_loader "Downloading Docker GPG key" curl -fsSL https://download.docker.com/linux/ubuntu/gpg -o /etc/apt/keyrings/docker.asc
         chmod a+r /etc/apt/keyrings/docker.asc
     fi
 
@@ -34,28 +38,24 @@ Signed-By: /etc/apt/keyrings/docker.asc
 EOF
     fi
 
-    log "Installing Docker CE..."
-    apt-get update -qq
-    apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
+    # Update cache first
+    run_with_loader "Updating apt cache for Docker" apt-get update -qq
 
-    log "Docker installed successfully."
+    # Install docker packages
+    run_with_loader "Installing Docker CE packages" apt-get install -y -qq docker-ce docker-ce-cli containerd.io docker-buildx-plugin docker-compose-plugin
 fi
 
 if ! systemctl is-enabled docker >/dev/null 2>&1; then
-    log "Enabling Docker service..."
-    systemctl enable docker >/dev/null 2>&1
+    run_with_loader "Enabling Docker service" systemctl enable docker
 fi
 
 if ! systemctl is-active docker >/dev/null 2>&1; then
-    log "Starting Docker service..."
-    systemctl start docker >/dev/null 2>&1
+    run_with_loader "Starting Docker service" systemctl start docker
 fi
 
 if [ -n "$USERNAME" ]; then
-    log "Ensuring $USERNAME is in the docker group..."
     if ! groups "$USERNAME" 2>/dev/null | grep -q "\bdocker\b"; then
-        usermod -aG docker "$USERNAME"
-        log "Added $USERNAME to docker group."
+        run_with_loader "Adding $USERNAME to docker group" usermod -aG docker "$USERNAME"
     else
         log "User $USERNAME is already in the docker group."
     fi

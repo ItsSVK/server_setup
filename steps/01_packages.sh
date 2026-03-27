@@ -10,11 +10,6 @@ step_info "Installing essential packages"
 
 export DEBIAN_FRONTEND=noninteractive
 
-PACKAGES="curl wget git ufw fail2ban nginx"
-log "Installing common packages: $PACKAGES"
+PACKAGES="curl wget git ufw fail2ban"
 
-if ! apt-get install -y -qq $PACKAGES; then
-    error "Failed to install packages: $PACKAGES"
-fi
-
-log "Essential packages installed successfully."
+run_with_loader "Installing common packages" apt-get install -y -qq $PACKAGES

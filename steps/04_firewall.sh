@@ -11,15 +11,7 @@ step_info "Configuring UFW firewall"
 if ufw status | grep -q "Status: active"; then
     log "UFW is already active."
 else
-    log "Setting up UFW rules..."
-    ufw default deny incoming >/dev/null
-    ufw default allow outgoing >/dev/null
+    run_with_loader "Setting up default UFW rules" bash -c "ufw default deny incoming && ufw default allow outgoing && ufw allow 22/tcp && ufw allow 80/tcp && ufw allow 443/tcp"
     
-    ufw allow 22/tcp >/dev/null
-    ufw allow 80/tcp >/dev/null
-    ufw allow 443/tcp >/dev/null
-    
-    log "Enabling UFW..."
-    ufw --force enable >/dev/null
-    log "UFW firewall configured and enabled."
+    run_with_loader "Enabling UFW firewall" bash -c "ufw --force enable"
 fi

@@ -13,8 +13,7 @@ log "Checking root account status..."
 if passwd -S root | grep -q ' L '; then
     log "Root account is already locked."
 else
-    passwd -l root >/dev/null
-    log "Root account locked securely."
+    run_with_loader "Locking root account" passwd -l root
 fi
 
 # Passwordless sudo

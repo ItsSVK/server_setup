@@ -5,6 +5,14 @@ set -euo pipefail
 # Find the directory of the script, resolving symlinks
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]:-$0}")" &>/dev/null && pwd)"
 
+# Parse arguments
+ADVANCED_MODE="no"
+for arg in "$@"; do
+    if [ "$arg" == "-f" ] || [ "$arg" == "--full" ]; then
+        ADVANCED_MODE="yes"
+    fi
+done
+
 # Check if expected directory structure exists
 if [ ! -d "$SCRIPT_DIR/lib" ] || [ ! -d "$SCRIPT_DIR/steps" ]; then
     echo "🚀 Bootstrapping server-setup via curl/wget..."
@@ -37,11 +45,19 @@ check_os
 echo -e "${CYAN}🚀 Starting modular secure server setup...${NC}"
 
 # Start Interactive Prompts
-if [ -z "$USERNAME" ]; then
+echo -e "\n${CYAN}====================================================${NC}"
+echo -e "${GREEN}Welcome to the Server Setup Wizard!${NC}"
+echo -e "This script will:"
+echo -e " - Create a new account with your chosen username"
+echo -e " - Enable SSH login (Key required) & disable Password auth"
+echo -e " - Setup basic security (ufw, fail2ban) & essential tools"
+echo -e "${CYAN}====================================================${NC}\n"
+
+if [ -z "${USERNAME:-}" ]; then
     USERNAME=$(ask "Enter the username to create/configure" "shouvik")
 fi
 
-if [ -z "$PUBLIC_KEY" ]; then
+if [ -z "${PUBLIC_KEY:-}" ]; then
     PUBLIC_KEY=$(ask "Enter your SSH Public Key" "")
     while [ -z "$PUBLIC_KEY" ]; do
         warn "SSH Public Key is strictly required for secure authentication."
@@ -49,27 +65,55 @@ if [ -z "$PUBLIC_KEY" ]; then
     done
 fi
 
-# Export variables so child scripts can access them
 export USERNAME
 export PUBLIC_KEY
+
+if ! confirm "Proceed with the core setup?"; then
+    log "Setup aborted by the user."
+    exit 0
+fi
+
+INSTALL_NGINX="no"
+INSTALL_DOCKER="no"
+
+if [ "$ADVANCED_MODE" == "yes" ]; then
+    echo -e "\n${CYAN}===================================${NC}"
+    echo -e "${YELLOW}Advanced Mode Enabled${NC}"
+    echo -e "${CYAN}===================================${NC}"
+    
+    if confirm "Install Nginx? (Web Server)"; then
+        INSTALL_NGINX="yes"
+    fi
+
+    if confirm "Install Docker? (Containers Engine)"; then
+        INSTALL_DOCKER="yes"
+    fi
+else
+    echo -e "\n${CYAN}Running in Essential Mode (Advanced prompts skipped).${NC}"
+    echo -e "Use the ${YELLOW}-f${NC} or ${YELLOW}--full${NC} argument to enable Nginx/Docker installations."
+fi
+
+export INSTALL_NGINX
+export INSTALL_DOCKER
 
 # Show summary of inputs
 echo ""
 echo -e "${CYAN}===================================${NC}"
 echo -e " Summary of Configuration"
 echo -e "${CYAN}===================================${NC}"
-echo -e " Username:   ${GREEN}$USERNAME${NC}"
-echo -e " Public Key: ${GREEN}$PUBLIC_KEY${NC}"
+echo -e " Username:       ${GREEN}$USERNAME${NC}"
+echo -e " Public Key:     ${GREEN}$PUBLIC_KEY${NC}"
+echo -e " Install Nginx:  ${GREEN}$INSTALL_NGINX${NC}"
+echo -e " Install Docker: ${GREEN}$INSTALL_DOCKER${NC}"
 echo -e "${CYAN}===================================${NC}"
 echo ""
 
-# Ask for confirmation before running
-if ! confirm "Proceed with installation?"; then
+if ! confirm "Looks good? Start installation?"; then
     log "Installation aborted by the user."
     exit 0
 fi
 
-log "Starting installation steps..."
+echo -e "\n${CYAN}Starting installation steps...${NC}\n"
 
 # Execute all steps in alphabetical/numerical order
 for step in "$SCRIPT_DIR"/steps/*.sh; do

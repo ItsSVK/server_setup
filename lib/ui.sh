@@ -34,3 +34,39 @@ confirm() {
         esac
     done
 }
+
+# Run a command with a spinner and hide its output unless it fails
+run_with_loader() {
+    local message="$1"
+    shift
+    
+    local tmp_log=$(mktemp)
+    
+    # Run the command in the background
+    "$@" > "$tmp_log" 2>&1 &
+    local pid=$!
+    
+    local spins=( "⠋" "⠙" "⠹" "⠸" "⠼" "⠴" "⠦" "⠧" "⠇" "⠏" )
+    local i=0
+    
+    while kill -0 $pid 2>/dev/null; do
+        printf "\r${CYAN}%s${NC} %s..." "${spins[$i]}" "$message"
+        i=$(( (i+1) % 10 ))
+        sleep 0.1
+    done
+    
+    wait $pid
+    local exit_code=$?
+    
+    if [ $exit_code -eq 0 ]; then
+        printf "\r\033[K${GREEN}✅${NC} %s\n" "$message"
+    else
+        printf "\r\033[K${RED}❌${NC} %s (Failed)\n" "$message"
+        echo -e "${RED}--- Error Log ---${NC}"
+        cat "$tmp_log"
+        echo -e "${RED}-----------------${NC}"
+        rm -f "$tmp_log"
+        return $exit_code
+    fi
+    rm -f "$tmp_log"
+}

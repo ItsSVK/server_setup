@@ -8,17 +8,26 @@ source "$PROJECT_ROOT/lib/env.sh"
 
 step_info "Configuring Nginx"
 
+if [ "${INSTALL_NGINX:-no}" != "yes" ]; then
+    log "Skipping Nginx setup as per user choice."
+    exit 0
+fi
+
+# We need to install Nginx since we removed it from 01_packages.sh
+if command -v nginx >/dev/null 2>&1; then
+    log "Nginx is already installed. Skipping installation."
+else
+    run_with_loader "Installing Nginx" apt-get install -y -qq nginx
+fi
+
 if systemctl is-enabled nginx >/dev/null 2>&1; then
     log "Nginx is already enabled to start on boot."
 else
-    log "Enabling Nginx service..."
-    systemctl enable nginx >/dev/null 2>&1
+    run_with_loader "Enabling Nginx service" systemctl enable nginx
 fi
 
 if systemctl is-active nginx >/dev/null 2>&1; then
     log "Nginx is already running."
 else
-    log "Starting Nginx service..."
-    systemctl start nginx >/dev/null 2>&1
-    log "Nginx started successfully."
+    run_with_loader "Starting Nginx service" systemctl start nginx
 fi

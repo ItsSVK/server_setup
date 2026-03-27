@@ -9,8 +9,7 @@ source "$PROJECT_ROOT/lib/env.sh"
 step_info "Configuring Fail2Ban"
 
 if [ ! -f /etc/fail2ban/jail.local ]; then
-    log "Creating jail.local from jail.conf..."
-    cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
+    run_with_loader "Creating jail.local from jail.conf" cp /etc/fail2ban/jail.conf /etc/fail2ban/jail.local
 else
     log "jail.local already exists."
 fi
@@ -33,8 +32,7 @@ else
     warn "Could not find [sshd] section in jail.local. Fail2ban ssh protection might not be enabled properly."
 fi
 
-log "Enabling and restarting fail2ban service..."
-systemctl enable fail2ban >/dev/null 2>&1
-systemctl restart fail2ban >/dev/null 2>&1
+run_with_loader "Enabling fail2ban service" systemctl enable fail2ban
+run_with_loader "Restarting fail2ban service" systemctl restart fail2ban
 
 log "Fail2Ban configured and restarted."

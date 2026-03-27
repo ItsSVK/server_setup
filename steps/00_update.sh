@@ -10,13 +10,5 @@ step_info "Updating system packages"
 
 export DEBIAN_FRONTEND=noninteractive
 
-log "Running apt update and upgrade..."
-if ! apt-get update -qq; then
-    error "Failed to update package lists."
-fi
-
-if ! apt-get upgrade -y -qq; then
-    error "Failed to upgrade packages."
-fi
-
-log "System packages updated successfully."
+run_with_loader "Updating package lists" apt-get update -qq
+run_with_loader "Upgrading installed packages" apt-get upgrade -y -qq

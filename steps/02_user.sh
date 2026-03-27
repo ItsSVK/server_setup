@@ -15,17 +15,11 @@ fi
 if getent passwd "$USERNAME" > /dev/null; then
     log "User $USERNAME already exists."
 else
-    log "Creating user $USERNAME..."
-    if ! useradd -m -s /bin/bash "$USERNAME"; then
-        error "Failed to create user $USERNAME."
-    fi
-    log "User $USERNAME created."
+    run_with_loader "Creating user $USERNAME" useradd -m -s /bin/bash "$USERNAME"
 fi
 
-log "Ensuring $USERNAME is in the sudo group..."
 if ! groups "$USERNAME" 2>/dev/null | grep -q "\bsudo\b"; then
-    usermod -aG sudo "$USERNAME"
-    log "Added $USERNAME to sudo group."
+    run_with_loader "Adding $USERNAME to sudo group" usermod -aG sudo "$USERNAME"
 else
     log "User $USERNAME is already in the sudo group."
 fi

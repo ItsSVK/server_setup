@@ -79,8 +79,7 @@ if [ "$SSHD_CHANGED" -eq 1 ]; then
     if ! sshd -t; then
         error "SSH configuration is invalid. Reverting changes requires manual intervention."
     fi
-    systemctl restart ssh
-    log "SSH config hardened and service restarted."
+    run_with_loader "Restarting SSH service" systemctl restart ssh
 else
     log "SSH config is already optimally secured."
 fi
