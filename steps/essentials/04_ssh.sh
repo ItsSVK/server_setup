@@ -77,6 +77,11 @@ update_sshd_config "PubkeyAuthentication" "yes"
 
 if [ "$SSHD_CHANGED" -eq 1 ]; then
     log "Validating SSH config..."
+    # Ensure privilege separation directory exists for sshd -t check
+    if [ ! -d /run/sshd ]; then
+        mkdir -p /run/sshd
+    fi
+    
     if ! sshd -t; then
         error "SSH configuration is invalid. Reverting changes requires manual intervention."
     fi
