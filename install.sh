@@ -79,7 +79,7 @@ INSTALL_NVM="no"
 
 if [ "$ADVANCED_MODE" != "yes" ]; then
     echo -e "\n${CYAN}Running in Essential Mode.${NC}"
-    if confirm "Would you like to switch to Advanced Mode to install optional tools (Nginx, Docker)?"; then
+    if confirm "Would you like to switch to Advanced Mode to install optional tools (Nginx, Docker etc)?"; then
         ADVANCED_MODE="yes"
     fi
 fi

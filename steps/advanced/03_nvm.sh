@@ -43,6 +43,9 @@ EOF'
     # Validate the installation hook
     if sudo -i -u "$USERNAME" bash -c 'source ~/.nvm/nvm.sh && command -v nvm' >/dev/null 2>&1; then
         log "✅ NVM successfully installed and sourced into profile for $USERNAME."
+        
+        # Install latest LTS Node.js and set as default
+        run_with_loader "Installing Node.js (LTS) via NVM" sudo -i -u "$USERNAME" bash -c 'source ~/.nvm/nvm.sh && nvm install --lts && nvm use --lts && nvm alias default "lts/*"'
     else
         warn "NVM installed but might require a shell restart to function."
     fi

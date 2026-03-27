@@ -11,6 +11,6 @@ step_info "Installing essential packages"
 
 export DEBIAN_FRONTEND=noninteractive
 
-PACKAGES="curl wget git ufw fail2ban"
+PACKAGES="curl wget git ufw fail2ban libatomic1"
 
 run_with_loader "Installing common packages" apt-get install -y -qq $PACKAGES
