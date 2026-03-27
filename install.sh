@@ -54,7 +54,7 @@ echo -e " - Setup basic security (ufw, fail2ban) & essential tools"
 echo -e "${CYAN}====================================================${NC}\n"
 
 if [ -z "${USERNAME:-}" ]; then
-    USERNAME=$(ask "Enter the username to create/configure" "shouvik")
+    USERNAME=$(ask "Enter the username to create/configure" "ubuntu")
 fi
 
 if [ -z "${PUBLIC_KEY:-}" ]; then
