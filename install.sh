@@ -144,7 +144,7 @@ echo ""
 echo -e "${CYAN}===================================${NC}"
 log "✅ All steps completed successfully!"
 echo -e "${CYAN}👉 Now login using:${NC}"
-PUBLIC_IP=$(curl -4 ifconfig.me || curl -4 ipv4.icanhazip.com || curl -4 api.ipify.org || curl -6 ifconfig.me ||echo "YOUR_SERVER_IP")
+PUBLIC_IP=$(curl -s4 ifconfig.me || curl -s4 ipv4.icanhazip.com || curl -s4 api.ipify.org || curl -s6 ifconfig.me || echo "YOUR_SERVER_IP")
 echo -e "${GREEN}ssh $USERNAME@$PUBLIC_IP${NC}"
 echo -e "${CYAN}===================================${NC}"
 
