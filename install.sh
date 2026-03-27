@@ -75,6 +75,7 @@ fi
 
 INSTALL_NGINX="no"
 INSTALL_DOCKER="no"
+INSTALL_NVM="no"
 
 if [ "$ADVANCED_MODE" != "yes" ]; then
     echo -e "\n${CYAN}Running in Essential Mode.${NC}"
@@ -95,12 +96,17 @@ if [ "$ADVANCED_MODE" == "yes" ]; then
     if confirm "Install Nginx? (Web Server)"; then
         INSTALL_NGINX="yes"
     fi
+
+    if confirm "Install NVM? (Node Version Manager)"; then
+        INSTALL_NVM="yes"
+    fi
 else
     echo -e "Skipping advanced tool prompts."
 fi
 
 export INSTALL_NGINX
 export INSTALL_DOCKER
+export INSTALL_NVM
 
 # Show summary of inputs
 echo ""
@@ -111,6 +117,7 @@ echo -e " Username:       ${GREEN}$USERNAME${NC}"
 echo -e " Public Key:     ${GREEN}$PUBLIC_KEY${NC}"
 echo -e " Install Nginx:  ${GREEN}$INSTALL_NGINX${NC}"
 echo -e " Install Docker: ${GREEN}$INSTALL_DOCKER${NC}"
+echo -e " Install NVM:    ${GREEN}$INSTALL_NVM${NC}"
 echo -e "${CYAN}===================================${NC}"
 echo ""
 

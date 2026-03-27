@@ -6,6 +6,7 @@ A modular, idempotent, and production-grade Bash script system to provision a fr
 
 - **System Update**: Updates and upgrades all apt packages.
 - **Essentials**: Installs `curl`, `wget`, `git`, `ufw`, `fail2ban`.
+- **Advanced**: Prompts to additionally install **Docker**, **Nginx**, and **NVM (Node Version Manager)**.
 - **User Setup**: Creates a dedicated sudo user.
 - **SSH Hardening**: Configures key-based auth and disables root/password logins.
 - **Security Defaults**: Enables UFW (ports 22, 80, 443) and Fail2Ban SSH protection.
@@ -35,7 +36,7 @@ wget -qO- "https://raw.githubusercontent.com/ItsSVK/server_setup/refs/heads/main
 ---
 
 ### Advanced Mode (Full Installation)
-If you want the script to prompt you for advanced tools (like Docker and Nginx), pass the `-f` or `--full` argument.
+If you want the script to prompt you for advanced tools (like Docker, Nginx, and NVM), pass the `-f` or `--full` argument.
 
 ### Using curl
 ```bash
@@ -61,7 +62,7 @@ sudo ./install.sh
 The project uses a structured modular design to keep everything strictly organized. Each script inside the `steps/` directory tree is idempotent and loads core functions from `lib/`.
 
 - `steps/essentials/`: Contains critical setup routines (System Updates, User Creation, SSH Hardening, UFW, Fail2ban). These run automatically.
-- `steps/advanced/`: Houses optional tool installations (Nginx, Docker). These require user confirmation via the `-f` flag to be enabled.
+- `steps/advanced/`: Houses optional tool installations (Docker, Nginx, NVM). These require user confirmation via the `-f` flag to be enabled.
 - `steps/finalize.sh`: Executes last-minute actions like locking the root account.
 
 You can easily modify, remove, or add custom shell scripts into any of these directories based on your requirements!
