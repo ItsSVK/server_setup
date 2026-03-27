@@ -1,6 +1,8 @@
 # Server Setup
 
-A modular, idempotent, and production-grade Bash script system to provision a fresh Ubuntu/Debian server. 
+A modular, idempotent, and production-grade Bash script system to provision a fresh Ubuntu/Debian server.
+
+![Server Setup Demo](assets/server-setup.gif)
 
 ### Features
 
