@@ -26,10 +26,11 @@ confirm() {
     local answer
     
     while true; do
-        read -p "$(echo -e "${YELLOW}?${NC} ${question} [y/N]: ")" answer
+        read -n 1 -p "$(echo -e "${YELLOW}?${NC} ${question} [y/n]: ")" answer
+        echo # print a newline for clean output
         case $(echo "$answer" | tr '[:upper:]' '[:lower:]') in
-            y|yes) return 0 ;;
-            n|no|"") return 1 ;;
+            y) return 0 ;;
+            n|"") return 1 ;;
             *) echo -e "${RED}Please answer y or n.${NC}" >&2 ;;
         esac
     done
