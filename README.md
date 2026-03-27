@@ -5,7 +5,7 @@ A modular, idempotent, and production-grade Bash script system to provision a fr
 ### Features
 
 - **System Update**: Updates and upgrades all apt packages.
-- **Essentials**: Installs `curl`, `wget`, `git`, `ufw`, `fail2ban`, `nginx`.
+- **Essentials**: Installs `curl`, `wget`, `git`, `ufw`, `fail2ban`.
 - **User Setup**: Creates a dedicated sudo user.
 - **SSH Hardening**: Configures key-based auth and disables root/password logins.
 - **Security Defaults**: Enables UFW (ports 22, 80, 443) and Fail2Ban SSH protection.

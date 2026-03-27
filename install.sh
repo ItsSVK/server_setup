@@ -76,6 +76,13 @@ fi
 INSTALL_NGINX="no"
 INSTALL_DOCKER="no"
 
+if [ "$ADVANCED_MODE" != "yes" ]; then
+    echo -e "\n${CYAN}Running in Essential Mode.${NC}"
+    if confirm "Would you like to switch to Advanced Mode to install optional tools (Nginx, Docker)?"; then
+        ADVANCED_MODE="yes"
+    fi
+fi
+
 if [ "$ADVANCED_MODE" == "yes" ]; then
     echo -e "\n${CYAN}===================================${NC}"
     echo -e "${YELLOW}Advanced Mode Enabled${NC}"
@@ -89,8 +96,7 @@ if [ "$ADVANCED_MODE" == "yes" ]; then
         INSTALL_DOCKER="yes"
     fi
 else
-    echo -e "\n${CYAN}Running in Essential Mode (Advanced prompts skipped).${NC}"
-    echo -e "Use the ${YELLOW}-f${NC} or ${YELLOW}--full${NC} argument to enable Nginx/Docker installations."
+    echo -e "Skipping advanced tool prompts."
 fi
 
 export INSTALL_NGINX
